@@ -23,9 +23,9 @@ class VenueControllerTest {
     @Test
     void venue() {
         VenueController venueController = new VenueController();
-        HttpEntity<Venue> http = venueController.venue("testName");
+        ResponseEntity http = (ResponseEntity) venueController.venue("testName");
         System.out.println(http);
-        assertEquals(HttpStatus.OK,((ResponseEntity) http).getStatusCode());
+        assertEquals(HttpStatus.OK,http.getStatusCode());
 
     }
 }
