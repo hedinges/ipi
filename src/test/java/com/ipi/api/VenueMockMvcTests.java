@@ -1,6 +1,6 @@
 package com.ipi.api;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import org.junit.jupiter.api.Test;
@@ -22,5 +22,10 @@ public class VenueMockMvcTests {
     @Test
     public void envEndPointNotHidden() throws Exception  {
         mockMvc.perform(get("/venue")).andExpect(jsonPath("$.name").value("Venue: myVenue!"));
+    }
+
+    @Test
+    public void createVenue() throws Exception  {
+        mockMvc.perform(post("/venue")).andExpect(jsonPath("$.name").value("Venue: myVenue!"));
     }
 }

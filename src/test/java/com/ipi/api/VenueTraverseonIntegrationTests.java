@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.client.Traverson;
+import org.springframework.web.client.RestOperations;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -27,5 +28,14 @@ public class VenueTraverseonIntegrationTests {
         assertThat(venue).isEqualTo("Venue: myVenue!");
     }
 
+    @Test
+    public void createNewVenue() throws Exception {
+        Traverson traverson = new Traverson(new URI("http://localhost:" + this.port + "/venue"),MediaTypes.HAL_JSON);
+
+
+
+        String venue = traverson.follow("self").toObject("$.names");
+        assertThat(venue).isEqualTo("Venue: myVenue!");
+    }
 
 }
