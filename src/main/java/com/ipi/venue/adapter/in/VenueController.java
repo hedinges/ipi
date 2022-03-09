@@ -5,11 +5,13 @@ import com.ipi.venue.domain.VenueSimpleCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -22,33 +24,37 @@ public class VenueController {
     @Autowired
     VenueSimpleCache venues;
 
-    @RequestMapping(value = "/venue", method = RequestMethod.GET)
-    public HttpEntity<Venue> getVenue(
-            @RequestParam(value = "name", defaultValue = "myVenue") String name){
+    @RequestMapping(value = "/venues", method = RequestMethod.GET)
+    public HttpEntity<List<Venue>> getVenues(
+            @RequestParam(value = "name"/*, defaultValue = "myVenue"*/,required = false) String name){
+
+        if (null == name) {
+            return new ResponseEntity<List<Venue>>(venues.list(), HttpStatus.OK);
+        }
 
         Venue venue = venues.getVenue(name);
 
         if (venue == null) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<List<Venue>>(Collections.EMPTY_LIST, HttpStatus.OK);
         }
-        return new ResponseEntity<>(venue, HttpStatus.OK);
+        return new ResponseEntity<List<Venue>>(List.of(venue), HttpStatus.OK);
     }
 
+    @PostMapping(value = "/venues", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Venue> createVenue(
+            @RequestBody() Venue newVenue){
 
-    @RequestMapping(value = "/venue", method = RequestMethod.POST)
-    public HttpEntity<Venue> createVenue(
-            @RequestParam(value = "name", defaultValue = "myVenue") String name){
-
-        Venue venue = venues.getVenue(name);
+        Venue venue = venues.getVenue(newVenue.getName());
         if (venue != null) {
-            return new ResponseEntity<>(venue, HttpStatus.CONFLICT);
+            return new ResponseEntity<Venue>(venue, HttpStatus.CONFLICT);
         }
 
-        venue = new Venue(String.format(TEMPLATE, name));
-        venue.add(linkTo(methodOn(VenueController.class).getVenue(name)).withSelfRel());
+        //venue = new Venue(String.format(TEMPLATE, name));
+        //todo:Validate venue
+        newVenue.add(linkTo(methodOn(VenueController.class).getVenues(newVenue.getName())).withSelfRel());
 
-        venues.putVenue(venue);
-        return new ResponseEntity<>(venue, HttpStatus.OK);
+        venues.putVenue(newVenue);
+        return new ResponseEntity<>(newVenue, HttpStatus.OK);
     }
 
 

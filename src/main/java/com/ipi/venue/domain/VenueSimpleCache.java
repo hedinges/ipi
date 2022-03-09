@@ -2,8 +2,10 @@ package com.ipi.venue.domain;
 
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
 
 @Component
 public class VenueSimpleCache {
@@ -17,5 +19,9 @@ public class VenueSimpleCache {
 
     public void putVenue(Venue venue) {
         cache.put(venue.getName(), venue);
+    }
+
+    public List<Venue> list() {
+        return cache.values().stream().toList();
     }
 }
