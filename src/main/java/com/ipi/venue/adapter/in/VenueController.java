@@ -9,9 +9,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -51,11 +51,21 @@ public class VenueController {
 
         //venue = new Venue(String.format(TEMPLATE, name));
         //todo:Validate venue
-        newVenue.add(linkTo(methodOn(VenueController.class).getVenues(newVenue.getName())).withSelfRel());
+        newVenue.add(linkTo(methodOn(VenueController.class).getVenuesById(newVenue.getId())).withSelfRel());
 
         venues.putVenue(newVenue);
         return new ResponseEntity<>(newVenue, HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/venues/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public HttpEntity<List<Venue>> getVenuesById(
+            @PathVariable(value = "id") UUID id){
 
+        List<Venue> filter = venues.getVenueById(id);
+
+        if (filter.isEmpty()) {
+            return new ResponseEntity<List<Venue>>(Collections.EMPTY_LIST, HttpStatus.OK);
+        }
+        return new ResponseEntity<List<Venue>>(filter, HttpStatus.OK);
+    }
 }

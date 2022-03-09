@@ -2,10 +2,8 @@ package com.ipi.venue.domain;
 
 import org.springframework.stereotype.Component;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class VenueSimpleCache {
@@ -24,4 +22,11 @@ public class VenueSimpleCache {
     public List<Venue> list() {
         return cache.values().stream().toList();
     }
+
+    public List<Venue> getVenueById(UUID id) {
+        return cache.values().stream()
+                .filter(venue -> venue.getId().equals(id))
+                .collect(Collectors.toList());
+    }
+
 }
